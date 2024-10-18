@@ -1,14 +1,11 @@
 package com.example.demo.service;
 
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.JwtProvider;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-
-import java.util.logging.Logger;
 
 @Service
 public class UserService {

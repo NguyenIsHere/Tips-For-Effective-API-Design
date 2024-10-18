@@ -2,6 +2,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Product;
+import com.example.demo.model.Color;
 import com.example.demo.model.Size;
 import com.example.demo.repository.ProductRepository;
 import com.google.cloud.storage.BlobId;
@@ -11,9 +12,12 @@ import com.google.cloud.storage.StorageOptions;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 
 @Service
 public class ProductService {
@@ -60,4 +64,47 @@ public class ProductService {
    public List<Product> getAllProducts() {
       return this.productRepository.findAll();
    }
+
+   public Product updateProduct(String productId, Product product) {
+      Product existingProduct = this.productRepository.findById(productId).orElse(null);
+      if (existingProduct == null) {
+         return null;
+      } else {
+         product.setProductId(productId);
+         return this.productRepository.save(product);
+      }
+   }
+   
+   public void deleteProduct(String productId) {
+      this.productRepository.deleteById(productId);
+   }
+
+   public Product getProductById(String productId) {
+      return this.productRepository.findById(productId).orElse(null);
+   }
+
+   public List<Product> searchProductsByName(String productName) {
+         Product product = new Product();
+         product.setName(productName);
+         ExampleMatcher matcher = ExampleMatcher.matchingAny()
+            .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+         Example<Product> example = Example.of(product, matcher);
+         return this.productRepository.findAll(example);
+   }
+
+   public List<Product> filterProductsByPrice(double minPrice, double maxPrice) {
+      List<Product> allProducts = this.productRepository.findAll();
+      List<Product> filteredProducts = new ArrayList<>();
+      for (Product product : allProducts) {
+          for (Color color : product.getColors()) {
+              for (Size size : color.getSizes()) {
+                  if (size.getPrice() >= minPrice && size.getPrice() <= maxPrice) {
+                      filteredProducts.add(product);
+                      break;
+                  }
+              }
+          }
+      }
+      return filteredProducts;
+  }
 }

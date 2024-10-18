@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.security.core.Authentication;
-import java.io.IOException;
 import javax.crypto.*;
 
 public class JwtTokenValidator extends OncePerRequestFilter{
