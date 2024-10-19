@@ -15,7 +15,7 @@ public class Cart {
     private String id;  // ID của giỏ hàng
 
     @Field("user_id")
-    private String userId;  // ID của người dùng sở hữu giỏ hàng
+    private String userId;  // ID của người dùng sở hữu giỏ hàng (sử dụng từ lớp User)
 
     private List<CartItem> items;  // Danh sách các sản phẩm trong giỏ hàng
 
@@ -27,4 +27,3 @@ public class Cart {
         this.items = items;
     }
 }
-

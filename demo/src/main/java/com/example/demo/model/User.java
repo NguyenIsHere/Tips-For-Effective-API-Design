@@ -12,6 +12,7 @@ import lombok.Data;
 )
 public class User {
     @Id
+    private String id;
     private String email;
     private String phone;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

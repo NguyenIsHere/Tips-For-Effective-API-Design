@@ -4,31 +4,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.List;
+
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
 import com.example.demo.repository.CartRepository;
-
+import com.example.demo.model.User;
 @Service
 public class CartService {
 
     @Autowired
     private CartRepository cartRepository;
 
-    // Lấy giỏ hàng của người dùng theo userId
-    public Cart getCartByUserId(String userId) {
-        Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
+    @Autowired
+    private UserService userService;  // Để lấy thông tin người dùng từ JWT
+
+    // Lấy giỏ hàng của người dùng theo JWT token
+    public Cart getCartByJwtToken(String jwt) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());  // Sử dụng userId
         return optionalCart.orElse(null); // Trả về null nếu không tìm thấy giỏ hàng
     }
 
     // Thêm sản phẩm vào giỏ hàng
-    public Cart addItemToCart(String userId, CartItem newItem) {
-        Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
-        Cart cart = optionalCart.orElse(new Cart(userId, List.of(newItem))); // Tạo giỏ hàng mới nếu chưa có
+    public Cart addItemToCart(String jwt, CartItem newItem) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
+        Cart cart = optionalCart.orElse(new Cart(user.getId(), List.of(newItem))); // Tạo giỏ hàng mới nếu chưa có
 
         boolean itemExists = false;
         for (CartItem item : cart.getItems()) {
             if (item.getProductId().equals(newItem.getProductId()) &&
-                item.getColor().equals(newItem.getColor()) &&
+                item.getColorName().equals(newItem.getColorName()) &&
                 item.getSizeName().equals(newItem.getSizeName())) {
                 item.setQuantity(item.getQuantity() + newItem.getQuantity()); // Cập nhật số lượng
                 itemExists = true;
@@ -44,13 +50,14 @@ public class CartService {
     }
 
     // Cập nhật thông tin sản phẩm trong giỏ hàng
-    public Cart updateCartItem(String userId, CartItem updatedItem) {
-        Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
+    public Cart updateCartItem(String jwt, CartItem updatedItem) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
             for (CartItem item : cart.getItems()) {
                 if (item.getProductId().equals(updatedItem.getProductId()) &&
-                    item.getColor().equals(updatedItem.getColor()) &&
+                    item.getColorName().equals(updatedItem.getColorName()) &&
                     item.getSizeName().equals(updatedItem.getSizeName())) {
                     item.setQuantity(updatedItem.getQuantity()); // Cập nhật số lượng
                     item.setPrice(updatedItem.getPrice()); // Cập nhật giá
@@ -62,19 +69,26 @@ public class CartService {
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
-    public Cart removeItemFromCart(String userId, String productId, String sizeName) {
-        Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
+    public Cart removeItemFromCart(String jwt, String productId, String colorName, String sizeName) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
-            cart.getItems().removeIf(item -> item.getProductId().equals(productId) && item.getSizeName().equals(sizeName));
+            // Xóa sản phẩm dựa trên productId, color, và sizeName
+            cart.getItems().removeIf(item -> 
+                item.getProductId().equals(productId) && 
+                item.getColorName().equals(colorName) && // Giả sử Color có thuộc tính name
+                item.getSizeName().equals(sizeName));
             return cartRepository.save(cart); // Lưu giỏ hàng sau khi xóa
         }
         return null; // Trả về null nếu không tìm thấy giỏ hàng
     }
+    
 
     // Xóa toàn bộ giỏ hàng (khi thanh toán hoặc hủy đơn)
-    public void clearCart(String userId) {
-        Optional<Cart> optionalCart = cartRepository.findByUserId(userId);
+    public void clearCart(String jwt) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
             cart.getItems().clear();
@@ -82,5 +96,3 @@ public class CartService {
         }
     }
 }
-
-

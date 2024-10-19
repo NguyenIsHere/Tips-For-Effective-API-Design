@@ -19,7 +19,7 @@ public class Review {
     private String productId;  // ID của sản phẩm (tham chiếu đến bảng Product)
 
     @Field("user_id")
-    private String userId;  // ID của người dùng (tham chiếu đến bảng User)
+    private String userId;  // ID của người dùng (sử dụng từ lớp User)
 
     private int rating;  // Đánh giá từ 1-5 sao
     private String comment;  // Nội dung đánh giá

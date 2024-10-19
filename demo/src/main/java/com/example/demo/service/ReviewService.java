@@ -2,52 +2,66 @@ package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.List;
 import com.example.demo.model.Review;
 import com.example.demo.repository.ReviewRepository;
+import com.example.demo.model.User; // Import model User nếu cần thiết
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ReviewService {
 
     @Autowired
-    private ReviewRepository reviewRepository; // Repository để tương tác với MongoDB
+    private ReviewRepository reviewRepository;
 
-    // Tạo đánh giá mới
-    public Review createReview(Review review) {
-        review.setReviewDate(LocalDateTime.now()); // Đặt thời gian đánh giá hiện tại
-        return reviewRepository.save(review); // Lưu đánh giá vào MongoDB
-    }
+    @Autowired
+    private UserService userService;  // Để lấy thông tin người dùng từ JWT
 
-    // Lấy tất cả đánh giá cho một sản phẩm
+    // Lấy danh sách đánh giá của sản phẩm theo productId
     public List<Review> getReviewsByProductId(String productId) {
-        return reviewRepository.findByProductId(productId); // Tìm kiếm đánh giá theo ID sản phẩm
+        return reviewRepository.findByProductId(productId);
     }
 
-    // Cập nhật một đánh giá
-    public Review updateReview(String reviewId, Review updatedReview) {
-        Optional<Review> existingReview = reviewRepository.findById(reviewId); // Tìm đánh giá theo ID
-        if (existingReview.isPresent()) {
-            // Cập nhật thông tin đánh giá
-            Review review = existingReview.get();
-            review.setRating(updatedReview.getRating());
-            review.setComment(updatedReview.getComment());
-            review.setReviewDate(LocalDateTime.now()); // Cập nhật thời gian đánh giá
-            return reviewRepository.save(review); // Lưu đánh giá đã cập nhật
-        }
-        return null; // Trả về null nếu không tìm thấy đánh giá
+    // Thêm đánh giá mới
+    public Review addReview(String jwt, Review review) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        review.setUserId(user.getId());  // Thiết lập userId cho đánh giá
+        review.setReviewDate(LocalDateTime.now());  // Thiết lập thời gian đánh giá
+        return reviewRepository.save(review);
     }
 
-    // Xóa một đánh giá
-    public boolean deleteReview(String reviewId) {
-        if (reviewRepository.existsById(reviewId)) {
-            reviewRepository.deleteById(reviewId); // Xóa đánh giá theo ID
-            return true; // Trả về true nếu xóa thành công
+    // Cập nhật đánh giá
+    public Review updateReview(String jwt, String reviewId, Review updatedReview) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
+
+        if (optionalReview.isPresent() && optionalReview.get().getUserId().equals(user.getId())) {
+            Review existingReview = optionalReview.get();
+            existingReview.setRating(updatedReview.getRating());
+            existingReview.setComment(updatedReview.getComment());
+            return reviewRepository.save(existingReview);
         }
-        return false; // Trả về false nếu không tìm thấy đánh giá
+        return null; // Trả về null nếu không tìm thấy đánh giá hoặc không phải của người dùng
+    }
+
+    // Xóa đánh giá
+    public void deleteReview(String jwt, String reviewId) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
+        if (optionalReview.isPresent() && optionalReview.get().getUserId().equals(user.getId())) {
+            reviewRepository.deleteById(reviewId);  // Xóa đánh giá của người dùng
+        }
+    }
+
+    // Lấy tất cả đánh giá (Admin)
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
+    }
+
+    // Xóa đánh giá (Admin)
+    public void deleteReviewByAdmin(String reviewId) {
+        reviewRepository.deleteById(reviewId);  // Admin có thể xóa bất kỳ đánh giá nào
     }
 }
-
-

@@ -23,7 +23,7 @@ import org.springframework.data.domain.ExampleMatcher;
 public class ProductService {
    @Autowired
    private ProductRepository productRepository;
-   private final String BUCKET_NAME = "tips-for-effective-api-design.appspot.com";
+   // private final String BUCKET_NAME = "tips-for-effective-api-design.appspot.com";
    private final Storage storage = (Storage)StorageOptions.getDefaultInstance().getService();
 
    public ProductService() {
