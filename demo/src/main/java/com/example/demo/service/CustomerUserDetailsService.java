@@ -22,7 +22,7 @@ public class CustomerUserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
         User user = userRepository.findByEmail(username);
         if(user == null){
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException(username);
         }
         USER_ROLE user_role = user.getRole();
         List<GrantedAuthority> authorities = new ArrayList<>();

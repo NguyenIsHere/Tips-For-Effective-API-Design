@@ -37,7 +37,7 @@ public class UserController {
     
         user.setFullname(requser.getFullname());
         user.setPhone(requser.getPhone());
-        user.setAddresses(requser.getAddresses());
+        user.setAddress(requser.getAddress());
 
         User updatedUser = userRepository.save(user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
