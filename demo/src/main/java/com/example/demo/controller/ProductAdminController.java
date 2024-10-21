@@ -2,21 +2,16 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Product;
 import com.example.demo.model.Size;
+import com.example.demo.model.User;
 import com.example.demo.service.ProductService;
 import java.util.List;
+
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping({"/api/admin/products"})
@@ -27,17 +22,22 @@ public class ProductAdminController {
    @Autowired
    private ProductService productService;
 
+   @Autowired
+   private UserService userService;
+
    public ProductAdminController() {
    }
 
    @GetMapping
-   public ResponseEntity<List<Product>> getAllProducts() {
+   public ResponseEntity<List<Product>> getAllProducts(@RequestHeader("Authorization") String jwt) throws Exception {
+      User user = userService.findUserByJwtToken(jwt);
       List<Product> products = this.productService.getAllProducts();
       return ResponseEntity.ok(products);
    }
 
    @GetMapping("/{productId}")
-   public ResponseEntity<Product> getProductById(@PathVariable String productId) {
+   public ResponseEntity<Product> getProductById(@PathVariable String productId, @RequestHeader("Authorization") String jwt) throws Exception {
+      User user = userService.findUserByJwtToken(jwt);
       Product product = this.productService.getProductById(productId);
       if (product != null) {
          return ResponseEntity.ok(product);
@@ -47,14 +47,16 @@ public class ProductAdminController {
    }
 
    @PostMapping
-   public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+   public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestHeader("Authorization") String jwt) throws Exception{
+      User user = userService.findUserByJwtToken(jwt);
       Product savedProduct = this.productService.addProduct(product);
       return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(savedProduct);
    }
 
    @PostMapping({"/{productId}/colors"})
    public ResponseEntity<Product> updateProductColor(@PathVariable String productId,
-         @RequestBody ColorUpdateRequest request) {
+         @RequestBody ColorUpdateRequest request, @RequestHeader("Authorization") String jwt) throws Exception {
+      User user = userService.findUserByJwtToken(jwt);
       String imageUrl = request.getImageUrl();
       String colorCode = request.getColorCode();
       List<Size> sizes = request.getSizes();
@@ -63,7 +65,9 @@ public class ProductAdminController {
    }
    
    @PutMapping("/{productId}")
-   public ResponseEntity<Product> updateProduct(@PathVariable String productId, @RequestBody Product product) {
+   public ResponseEntity<Product> updateProduct(@PathVariable String productId, @RequestBody Product product,
+                                                @RequestHeader("Authorization") String jwt) throws Exception {
+      User user = userService.findUserByJwtToken(jwt);
       Product updatedProduct = this.productService.updateProduct(productId, product);
       if (updatedProduct != null) {
          return ResponseEntity.ok(updatedProduct);
@@ -73,7 +77,8 @@ public class ProductAdminController {
    }
 
    @DeleteMapping("/{productId}")
-   public ResponseEntity<Void> deleteProduct(@PathVariable String productId) {
+   public ResponseEntity<Void> deleteProduct(@PathVariable String productId, @RequestHeader("Authorization") String jwt) throws Exception {
+      User user = userService.findUserByJwtToken(jwt);
       this.productService.deleteProduct(productId);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
    }

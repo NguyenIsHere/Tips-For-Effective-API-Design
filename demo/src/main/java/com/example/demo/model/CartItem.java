@@ -11,7 +11,7 @@ public class CartItem {
   private String colorName;  // Màu sắc của sản phẩm mà người dùng chọn
   private String sizeName;  // Kích thước của sản phẩm (S, M, L, XL,...)
   private int quantity;  // Số lượng sản phẩm người dùng chọn
-  private double price; // Giá của sản phẩm với size đã chọn
+  private double totalPrice; // Giá của sản phẩm với size đã chọn
   private LocalDateTime addedAt;  // Thời gian sản phẩm được thêm vào giỏ hàng
 
   // Constructors
@@ -23,7 +23,7 @@ public class CartItem {
       this.colorName = colorName;
       this.sizeName = sizeName;
       this.quantity = quantity;
-      this.price = price;
+      this.totalPrice = price;
       this.addedAt = LocalDateTime.now();  // Ghi lại thời gian thêm vào giỏ hàng
   }
 }

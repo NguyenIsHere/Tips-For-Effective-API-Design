@@ -16,15 +16,17 @@ public class Product {
    private String name;
    private String description;
    private String category;
+   private Double price;
    private List<Color> colors;
 
    public Product() {
    }
 
-   public Product(String name, String description, String category, List<Color> colors) {
+   public Product(String name, String description, String category, List<Color> colors, double price) {
       this.name = name;
       this.description = description;
       this.category = category;
       this.colors = colors;
+      this.price = price;
    }
 }

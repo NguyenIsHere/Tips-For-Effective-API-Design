@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Product;
+import com.example.demo.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -18,6 +20,9 @@ public class CartService {
     @Autowired
     private UserService userService;  // Để lấy thông tin người dùng từ JWT
 
+    @Autowired
+    private ProductRepository productRepository;
+
     // Lấy giỏ hàng của người dùng theo JWT token
     public Cart getCartByJwtToken(String jwt) throws Exception {
         User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
@@ -29,6 +34,7 @@ public class CartService {
     public Cart addItemToCart(String jwt, CartItem newItem) throws Exception {
         User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
         Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
+        Product product = productRepository.findByName(newItem.getProductName());
         Cart cart = optionalCart.orElse(new Cart(user.getId(), List.of(newItem))); // Tạo giỏ hàng mới nếu chưa có
 
         boolean itemExists = false;
@@ -37,6 +43,7 @@ public class CartService {
                 item.getColorName().equals(newItem.getColorName()) &&
                 item.getSizeName().equals(newItem.getSizeName())) {
                 item.setQuantity(item.getQuantity() + newItem.getQuantity()); // Cập nhật số lượng
+                item.setTotalPrice(item.getQuantity()*product.getPrice());
                 itemExists = true;
                 break;
             }
@@ -53,6 +60,7 @@ public class CartService {
     public Cart updateCartItem(String jwt, CartItem updatedItem) throws Exception {
         User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
         Optional<Cart> optionalCart = cartRepository.findByUserId(user.getId());
+        Product product = productRepository.findByName(updatedItem.getProductName());
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
             for (CartItem item : cart.getItems()) {
@@ -60,7 +68,7 @@ public class CartService {
                     item.getColorName().equals(updatedItem.getColorName()) &&
                     item.getSizeName().equals(updatedItem.getSizeName())) {
                     item.setQuantity(updatedItem.getQuantity()); // Cập nhật số lượng
-                    item.setPrice(updatedItem.getPrice()); // Cập nhật giá
+                    item.setTotalPrice(updatedItem.getQuantity()* product.getPrice()); // Cập nhật giá
                     return cartRepository.save(cart); // Lưu lại giỏ hàng đã cập nhật
                 }
             }

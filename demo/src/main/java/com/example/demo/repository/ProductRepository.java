@@ -11,4 +11,6 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProductRepository extends MongoRepository<Product, String> {
   @Query("{ 'colors.sizes.price' : { $gte: ?0, $lte: ?1 } }")
   List<Product> findProductsBySizePriceBetween(double minPrice, double maxPrice);
+
+  Product findByName(String name);
 }
