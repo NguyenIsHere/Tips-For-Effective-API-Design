@@ -19,5 +19,5 @@ public class User {
     private String password;
     private String fullname;
     private USER_ROLE role = USER_ROLE.ROLE_CUSTOMER;
-    private Address addresses;
+    private Address address;
 }
