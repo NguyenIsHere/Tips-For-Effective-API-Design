@@ -34,7 +34,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
 	implementation 'com.google.cloud:google-cloud-storage:1.113.14'
 	implementation 'com.google.firebase:firebase-admin:7.1.0'
-	implementation 'org.json:json:20171018'
+	implementation 'com.google.code.gson:gson:2.10.1'
+	
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -6,18 +6,12 @@ import com.example.demo.model.Product;
 import com.example.demo.model.User;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.ProductRepository;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import jakarta.annotation.PostConstruct;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import static javax.management.Query.eq;
 
 @Service
 public class OrderService {
