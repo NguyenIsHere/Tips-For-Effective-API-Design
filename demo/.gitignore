@@ -25,6 +25,7 @@ bin/
 *.iws
 *.iml
 *.ipr
+demo-0.0.1-SNAPSHOT.jar
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
