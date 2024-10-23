@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject; // https://mvnrepository.com/artifact/org.json/json
+import org.apache.JSONObject; // https://mvnrepository.com/artifact/org.json/json
 import com.example.demo.vn.zalopay.crypto.HMACUtil; // tải về ở mục DOWNLOADS
 
 import java.io.BufferedReader;
