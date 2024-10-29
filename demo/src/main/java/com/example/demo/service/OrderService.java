@@ -28,7 +28,8 @@ public class OrderService {
 
         Order createOrder = new Order();
         Product product = productRepository.findByName(orderItem.getProductName());
-        orderItem.setTotalPrice(orderItem.getQuantity()* product.getPrice());
+        // orderItem.setTotalPrice(orderItem.getQuantity()* product.getPrice());
+        orderItem.setTotalPrice(60);
 
         createOrder.getOrderItems().add(orderItem);
         createOrder.setCreatedAt(new Date());

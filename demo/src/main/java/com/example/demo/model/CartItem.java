@@ -18,13 +18,18 @@ public class CartItem {
   public CartItem() {}
 
   public CartItem(String productId, String productName, String colorName, String sizeName, int quantity, double price) {
-      this.productId = productId;
-      this.productName = productName;
-      this.colorName = colorName;
-      this.sizeName = sizeName;
-      this.quantity = quantity;
-      this.totalPrice = price;
-      this.addedAt = LocalDateTime.now();  // Ghi lại thời gian thêm vào giỏ hàng
+    this.productId = productId;
+    this.productName = productName;
+    this.colorName = colorName;
+    this.sizeName = sizeName;
+    this.quantity = quantity;
+    this.totalPrice = price;
+    this.addedAt = LocalDateTime.now(); // Ghi lại thời gian thêm vào giỏ hàng
   }
+  
+  public void setAddedAt(java.time.LocalDateTime localDateTime) {
+      this.addedAt = localDateTime;
+  }
+
 }
 
