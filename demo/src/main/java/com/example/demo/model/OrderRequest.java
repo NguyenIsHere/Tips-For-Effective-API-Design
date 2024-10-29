@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class OrderRequest {
   @Id
-  private String id;
+  private String orderRequestId; // apptransId sẽ được gán cho orderRequestId
   @Field("user_id")
   private String userId; // ID của người dùng (sử dụng từ lớp User)
   private int amount;

@@ -9,11 +9,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import com.example.demo.model.Cart;
 import com.example.demo.model.OrderRequest;
 import com.example.demo.model.User;
 import com.example.demo.repository.OrderRequestRepository;
 import com.example.demo.vn.zalopay.crypto.HMACUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +31,18 @@ public class ZaloPayCreateOrderService {
     private OrderRequestRepository orderRequestRepository;
 
     @Autowired
-    private UserService userService;  // Để lấy thông tin người dùng từ JWT
+    private UserService userService; // Để lấy thông tin người dùng từ JWT
+    
+    @Autowired
+    private CartService cartService; // Để lấy thông tin giỏ hàng từ JWT
 
+    private final ObjectMapper objectMapper;
+
+    public ZaloPayCreateOrderService() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Đăng ký JavaTimeModule
+    }
+    
     private static final Map<String, String> config = new HashMap<>() {{
         put("app_id", "2553");
         put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
@@ -43,6 +58,36 @@ public class ZaloPayCreateOrderService {
 
         User user = userService.findUserByJwtToken(jwt); // Lấy thông tin người dùng từ JWT
         orderRequest.setUserId(user.getId()); // Lưu ID người dùng vào đơn hàng
+        Cart cart = cartService.getCartByJwtToken(jwt); // Lấy giỏ hàng của người dùng
+        if (cart == null) {
+            throw new Exception("Cart not found");
+        }
+
+        // Lấy danh sách CartItem từ giỏ hàng
+        var cartItems = cart.getItems();
+
+        // Chuyển đổi danh sách CartItem thành chuỗi JSON
+        String itemsJson = objectMapper.writeValueAsString(cartItems);
+
+        // Lưu danh sách sản phẩm vào đơn hàng
+        orderRequest.setItem(itemsJson);
+        
+        // Tính tổng giá trị đơn hàng
+        cart.calculateTotalPrice();
+        double totalAmount = (Math.round(cart.getTotalPrice() * 100) / 100.0)*1000;
+
+        // Chuyển đổi sang int (làm tròn) và lưu tổng giá trị vào đơn hàng
+        orderRequest.setAmount((int) totalAmount);
+
+        // Lấy thời gian hiện tại chuyển thành json string và gán vào embedData
+        LocalDateTime now = LocalDateTime.now();
+                // Định dạng LocalDateTime thành chuỗi
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+
+        // Giả lập JSON String
+        String jsonDateTime = "{ \"dateTime\": \"" + formattedDateTime + "\" }";
+        orderRequest.setEmbedData(jsonDateTime);
 
         // Chuẩn bị dữ liệu đơn hàng
         Map<String, Object> order = new HashMap<>();
@@ -53,7 +98,7 @@ public class ZaloPayCreateOrderService {
         order.put("item", orderRequest.getItem());
         order.put("embed_data", orderRequest.getEmbedData());
         order.put("callback_url", orderRequest.getCallbackUrl()); // Thêm callback URL
-        order.put("amount", orderRequest.getAmount());
+        order.put("amount", orderRequest.getAmount()); // Tổng giá trị đơn hàng
         order.put("description", orderRequest.getDescription());
         order.put("bank_code", orderRequest.getBankCode());
 
@@ -69,7 +114,9 @@ public class ZaloPayCreateOrderService {
         );
         order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
 
-        orderRequest.setId(order.get("app_trans_id").toString()); // Lưu appTransId vào đơn hàng
+        // Lưu appTransId vào đơn hàng
+        orderRequest.setOrderRequestId(order.get("app_trans_id").toString()); 
+
         // Lưu thông tin đơn hàng vào cơ sở dữ liệu
         orderRequestRepository.save(orderRequest);
 

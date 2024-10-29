@@ -18,7 +18,9 @@ public class Cart {
     @Field("user_id")
     private String userId;  // ID của người dùng sở hữu giỏ hàng (sử dụng từ lớp User)
 
-    private List<CartItem> items;  // Danh sách các sản phẩm trong giỏ hàng
+    private List<CartItem> items; // Danh sách các sản phẩm trong giỏ hàng
+    
+    private double totalPrice; // Tổng giá của tất cả sản phẩm trong giỏ hàng
 
     // Constructor không tham số
     public Cart() {
@@ -52,6 +54,15 @@ public class Cart {
                 break;
             }
         }
+    }
+
+    // Phương thức tính tổng giá của tất cả sản phẩm trong giỏ hàng
+    public void calculateTotalPrice() {
+        double total = 0;
+        for (CartItem item : items) {
+            total += item.getTotalPrice();
+        }
+        this.totalPrice = total;
     }
 }
 

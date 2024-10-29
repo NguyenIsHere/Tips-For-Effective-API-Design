@@ -39,7 +39,7 @@ public class ZaloPayCallbackService {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> datajson = new ObjectMapper().readValue(data, Map.class);
                 String appTransId = (String) datajson.get("app_trans_id");
-                // Find request order by Id and update status to mongoDB
+                // Tìm request order theo Id và cập nhật trạng thái lên mongoDB
                 orderRequestRepository.findById(appTransId).ifPresent(orderRequest -> {
                     orderRequest.setStatus("COMPLETED");
                     orderRequestRepository.save(orderRequest);

@@ -26,10 +26,5 @@ public class CartItem {
     this.totalPrice = price;
     this.addedAt = LocalDateTime.now(); // Ghi lại thời gian thêm vào giỏ hàng
   }
-  
-  public void setAddedAt(java.time.LocalDateTime localDateTime) {
-      this.addedAt = localDateTime;
-  }
-
 }
 
