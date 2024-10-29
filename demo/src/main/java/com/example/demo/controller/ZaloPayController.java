@@ -19,9 +19,9 @@ public class ZaloPayController {
     private ZaloPayCreateOrderService zaloPayCreateOrderService;
 
     @PostMapping("/create-order")
-    public ResponseEntity<String> createZaloPayOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<String> createZaloPayOrder(@RequestHeader("Authorization") String jwt, @RequestBody OrderRequest orderRequest) throws Exception {
       // Gọi service để tạo đơn hàng và nhận kết quả từ ZaloPay
-      String response = zaloPayCreateOrderService.createOrder(orderRequest);
+      String response = zaloPayCreateOrderService.createOrder(jwt, orderRequest);
       return ResponseEntity.ok(response);
     }
     

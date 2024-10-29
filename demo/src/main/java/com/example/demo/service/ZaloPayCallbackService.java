@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.repository.OrderRequestRepository;
 import com.example.demo.vn.zalopay.crypto.HMACUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -9,6 +12,9 @@ import java.util.Map;
 
 @Service
 public class ZaloPayCallbackService {
+    
+    @Autowired
+    private OrderRequestRepository orderRequestRepository;
 
     private static final String key2 = "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"; // Khóa xác thực key2 được cung cấp bởi ZaloPay
 
@@ -30,9 +36,14 @@ public class ZaloPayCallbackService {
                 result.put("return_message", "mac not equal");
             } else {
                 // Thanh toán thành công, bạn có thể cập nhật trạng thái đơn hàng tại đây
+                @SuppressWarnings("unchecked")
                 Map<String, Object> datajson = new ObjectMapper().readValue(data, Map.class);
                 String appTransId = (String) datajson.get("app_trans_id");
-                // System.out.println("Update order's status = success where app_trans_id = " + appTransId);
+                // Find request order by Id and update status to mongoDB
+                orderRequestRepository.findById(appTransId).ifPresent(orderRequest -> {
+                    orderRequest.setStatus("COMPLETED");
+                    orderRequestRepository.save(orderRequest);
+                });
 
                 // Trả về thông báo thanh toán thành công
                 result.put("return_code", 1);

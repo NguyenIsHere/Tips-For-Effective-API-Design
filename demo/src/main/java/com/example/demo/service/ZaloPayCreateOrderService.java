@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,6 +11,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.demo.model.OrderRequest;
+import com.example.demo.model.User;
+import com.example.demo.repository.OrderRequestRepository;
 import com.example.demo.vn.zalopay.crypto.HMACUtil;
 
 import java.util.HashMap;
@@ -19,6 +22,12 @@ import java.util.Random;
 @Service
 public class ZaloPayCreateOrderService {
 
+    @Autowired
+    private OrderRequestRepository orderRequestRepository;
+
+    @Autowired
+    private UserService userService;  // Để lấy thông tin người dùng từ JWT
+
     private static final Map<String, String> config = new HashMap<>() {{
         put("app_id", "2553");
         put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
@@ -27,17 +36,20 @@ public class ZaloPayCreateOrderService {
     }};
 
     // Phương thức tạo đơn hàng dựa trên dữ liệu từ OrderRequest
-    public String createOrder(OrderRequest orderRequest) {
+    public String createOrder(String jwt, OrderRequest orderRequest) throws Exception {
         // Tạo ID giao dịch ngẫu nhiên
         Random rand = new Random();
         int transID = rand.nextInt(1000000);
+
+        User user = userService.findUserByJwtToken(jwt); // Lấy thông tin người dùng từ JWT
+        orderRequest.setUserId(user.getId()); // Lưu ID người dùng vào đơn hàng
 
         // Chuẩn bị dữ liệu đơn hàng
         Map<String, Object> order = new HashMap<>();
         order.put("app_id", config.get("app_id"));
         order.put("app_time", System.currentTimeMillis());
         order.put("app_trans_id", String.format("%s_%d", getCurrentDate("yyMMdd"), transID));
-        order.put("app_user", orderRequest.getAppUser());
+        order.put("app_user", user.getId());
         order.put("item", orderRequest.getItem());
         order.put("embed_data", orderRequest.getEmbedData());
         order.put("callback_url", orderRequest.getCallbackUrl()); // Thêm callback URL
@@ -56,6 +68,10 @@ public class ZaloPayCreateOrderService {
                 order.get("item").toString()
         );
         order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
+
+        orderRequest.setId(order.get("app_trans_id").toString()); // Lưu appTransId vào đơn hàng
+        // Lưu thông tin đơn hàng vào cơ sở dữ liệu
+        orderRequestRepository.save(orderRequest);
 
         // Gửi yêu cầu POST tới ZaloPay
         RestTemplate restTemplate = new RestTemplate();
