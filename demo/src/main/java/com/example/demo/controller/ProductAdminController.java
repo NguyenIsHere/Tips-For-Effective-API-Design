@@ -23,7 +23,7 @@ public class ProductAdminController {
    public ProductAdminController() {
    }
 
-   @GetMapping
+   @GetMapping("/all")
    public ResponseEntity<List<Product>> getAllProducts(@RequestHeader("Authorization") String jwt) throws Exception {
       List<Product> products = this.productService.getAllProducts();
       return ResponseEntity.ok(products);

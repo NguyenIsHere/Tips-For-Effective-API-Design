@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import com.example.demo.model.Review;
 import com.example.demo.service.ReviewService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("api/reviews")
@@ -15,11 +17,10 @@ public class ReviewUserController {
     @Autowired
     private ReviewService reviewService;
 
-    // Lấy danh sách đánh giá của sản phẩm theo productId
+    // Lấy đánh giá với phân trang
     @GetMapping("/{productId}")
-    public ResponseEntity<List<Review>> getReviewsByProductId(@PathVariable String productId) {
-        List<Review> reviews = reviewService.getReviewsByProductId(productId);
-        return ResponseEntity.ok(reviews);
+    public Page<Review> getReviews(@PathVariable String productId,Pageable pageable) {
+        return reviewService.getReviewsPageByProductId(productId, pageable);
     }
 
     // Thêm đánh giá mới
@@ -38,7 +39,8 @@ public class ReviewUserController {
 
     // Xóa đánh giá
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@RequestHeader("Authorization") String jwt, @PathVariable String reviewId) throws Exception {
+    public ResponseEntity<Void> deleteReview(@RequestHeader("Authorization") String jwt, @PathVariable String reviewId)
+            throws Exception {
         reviewService.deleteReview(jwt, reviewId);
         return ResponseEntity.noContent().build();
     }

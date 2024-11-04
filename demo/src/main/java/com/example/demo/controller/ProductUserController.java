@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping({"/api/products"})
@@ -26,7 +27,7 @@ public class ProductUserController {
    public ProductUserController() {
    }
 
-   @GetMapping
+   @GetMapping("/all")
    public ResponseEntity<List<Product>> getAllProducts() {
       List<Product> products = this.productService.getAllProducts();
       return ResponseEntity.ok(products);
@@ -48,9 +49,8 @@ public class ProductUserController {
       return ResponseEntity.ok(products);
    }
 
-   @GetMapping("/filter")
-   public ResponseEntity<List<Product>> filterProductsByPrice(@RequestParam double minPrice, @RequestParam double maxPrice) {
-      List<Product> products = this.productService.filterProductsByPrice(minPrice, maxPrice);
-      return ResponseEntity.ok(products);
+   @GetMapping
+   public Page<Product> getProducts(Pageable pageable) {
+       return productService.getProducts(pageable);
    }
 }

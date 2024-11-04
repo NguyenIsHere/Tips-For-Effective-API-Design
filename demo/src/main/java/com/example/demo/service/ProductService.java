@@ -2,7 +2,6 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Product;
-import com.example.demo.model.Color;
 import com.example.demo.model.Size;
 import com.example.demo.repository.ProductRepository;
 import com.google.cloud.storage.BlobId;
@@ -12,12 +11,13 @@ import com.google.cloud.storage.StorageOptions;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ProductService {
@@ -91,20 +91,8 @@ public class ProductService {
          Example<Product> example = Example.of(product, matcher);
          return this.productRepository.findAll(example);
    }
-
-   public List<Product> filterProductsByPrice(double minPrice, double maxPrice) {
-      List<Product> allProducts = this.productRepository.findAll();
-      List<Product> filteredProducts = new ArrayList<>();
-      for (Product product : allProducts) {
-          for (Color color : product.getColors()) {
-              for (Size size : color.getSizes()) {
-                  if (size.getPrice() >= minPrice && size.getPrice() <= maxPrice) {
-                      filteredProducts.add(product);
-                      break;
-                  }
-              }
-          }
-      }
-      return filteredProducts;
+  
+   public Page<Product> getProducts(Pageable pageable) {
+      return productRepository.findAll(pageable);
   }
 }

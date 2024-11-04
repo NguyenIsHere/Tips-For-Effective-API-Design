@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("api/users")
@@ -43,7 +46,8 @@ public class UserController {
     }
 
     @PostMapping("/updateUser/changePassword")
-    public ResponseEntity<User> updatePasswordUser(@RequestBody User requser, @RequestHeader("Authorization") String jwt) throws Exception{
+    public ResponseEntity<User> updatePasswordUser(@RequestBody User requser,
+            @RequestHeader("Authorization") String jwt) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
 
         user.setPassword(requser.getPassword());
@@ -51,4 +55,10 @@ public class UserController {
         User updatedUser = userRepository.save(user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
+    
+    @GetMapping("/all")
+    public Page<User> getAllUsers(@RequestHeader("Authorization") String jwt, Pageable pageable) throws Exception {
+        return userService.getAllUsers(pageable);
+    }
+    
 }

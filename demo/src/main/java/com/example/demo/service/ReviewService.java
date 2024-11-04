@@ -7,8 +7,9 @@ import com.example.demo.repository.ReviewRepository;
 import com.example.demo.model.User; // Import model User nếu cần thiết
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ReviewService {
@@ -19,9 +20,9 @@ public class ReviewService {
     @Autowired
     private UserService userService;  // Để lấy thông tin người dùng từ JWT
 
-    // Lấy danh sách đánh giá của sản phẩm theo productId
-    public List<Review> getReviewsByProductId(String productId) {
-        return reviewRepository.findByProductId(productId);
+    // Lấy danh sách đánh giá của sản phẩm theo productId với phân trang
+    public Page<Review> getReviewsPageByProductId(String productId, Pageable pageable) {
+        return reviewRepository.findByProductId(productId, pageable);
     }
 
     // Thêm đánh giá mới
@@ -56,12 +57,12 @@ public class ReviewService {
     }
 
     // Lấy tất cả đánh giá (Admin)
-    public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+    public Page<Review> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
     }
 
     // Xóa đánh giá (Admin)
     public void deleteReviewByAdmin(String reviewId) {
-        reviewRepository.deleteById(reviewId);  // Admin có thể xóa bất kỳ đánh giá nào
+        reviewRepository.deleteById(reviewId); // Admin có thể xóa bất kỳ đánh giá nào
     }
 }

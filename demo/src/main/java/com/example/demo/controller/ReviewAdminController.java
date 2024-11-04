@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.model.Review;
 import com.example.demo.service.ReviewService;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 @RestController
 @RequestMapping("api/admin/reviews")
@@ -16,10 +18,9 @@ public class ReviewAdminController {
     private ReviewService reviewService;
 
     // Lấy tất cả đánh giá
-    @GetMapping
-    public ResponseEntity<List<Review>> getAllReviews(@RequestHeader("Authorization") String jwt) throws Exception {
-        List<Review> reviews = reviewService.getAllReviews();
-        return ResponseEntity.ok(reviews);
+    @GetMapping("/all")
+    public Page<Review> getAllReviews(@RequestHeader("Authorization") String jwt, Pageable pageable) throws Exception {
+        return reviewService.getAllReviews(pageable);
     }
 
     // Xóa đánh giá

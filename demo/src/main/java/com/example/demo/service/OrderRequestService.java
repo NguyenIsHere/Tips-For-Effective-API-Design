@@ -4,9 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.model.OrderRequest;
 import com.example.demo.repository.OrderRequestRepository;
+
 import java.util.Optional;
 import java.util.Map;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 @Service
 public class OrderRequestService {
@@ -61,10 +66,15 @@ public class OrderRequestService {
       }
   }
 
-
   // Xóa đơn hàng
   public String deleteOrder(String orderRequestId) {
-      orderRequestRepository.deleteById(orderRequestId);
-      return "Order status deleted successfully";
+    orderRequestRepository.deleteById(orderRequestId);
+    return "Order status deleted successfully";
   }
+  
+  // Lấy danh sách đơn hàng của người dùng theo trang
+  public Page<OrderRequest> getOrdersByUserId(String userId, Pageable pageable) {
+    return orderRequestRepository.findByUserId(userId, pageable);
+  }
+
 }
