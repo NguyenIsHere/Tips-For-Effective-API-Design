@@ -12,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping({"/api/admin/products"})
-@CrossOrigin(
-   origins = {"http://localhost:3000"}
-)
+@RequestMapping({ "/api/v1/admin/products" })
+@CrossOrigin(origins = { "http://localhost:3000" })
 public class ProductAdminController {
    @Autowired
    private ProductService productService;
@@ -30,7 +28,8 @@ public class ProductAdminController {
    }
 
    @GetMapping("/{productId}")
-   public ResponseEntity<Product> getProductById(@PathVariable String productId, @RequestHeader("Authorization") String jwt) throws Exception {
+   public ResponseEntity<Product> getProductById(@PathVariable String productId,
+         @RequestHeader("Authorization") String jwt) throws Exception {
       Product product = this.productService.getProductById(productId);
       if (product != null) {
          return ResponseEntity.ok(product);
@@ -40,12 +39,13 @@ public class ProductAdminController {
    }
 
    @PostMapping
-   public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestHeader("Authorization") String jwt) throws Exception{
+   public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestHeader("Authorization") String jwt)
+         throws Exception {
       Product savedProduct = this.productService.addProduct(product);
       return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(savedProduct);
    }
 
-   @PostMapping({"/{productId}/colors"})
+   @PostMapping({ "/{productId}/colors" })
    public ResponseEntity<Product> updateProductColor(@PathVariable String productId,
          @RequestBody ColorUpdateRequest request, @RequestHeader("Authorization") String jwt) throws Exception {
       String imageUrl = request.getImageUrl();
@@ -54,10 +54,10 @@ public class ProductAdminController {
       Product updatedProduct = this.productService.updateProductColor(productId, colorCode, imageUrl, sizes);
       return ResponseEntity.ok(updatedProduct);
    }
-   
+
    @PutMapping("/{productId}")
    public ResponseEntity<Product> updateProduct(@PathVariable String productId, @RequestBody Product product,
-                                                @RequestHeader("Authorization") String jwt) throws Exception {
+         @RequestHeader("Authorization") String jwt) throws Exception {
       Product updatedProduct = this.productService.updateProduct(productId, product);
       if (updatedProduct != null) {
          return ResponseEntity.ok(updatedProduct);
@@ -67,7 +67,8 @@ public class ProductAdminController {
    }
 
    @DeleteMapping("/{productId}")
-   public ResponseEntity<Void> deleteProduct(@PathVariable String productId, @RequestHeader("Authorization") String jwt) throws Exception {
+   public ResponseEntity<Void> deleteProduct(@PathVariable String productId, @RequestHeader("Authorization") String jwt)
+         throws Exception {
       this.productService.deleteProduct(productId);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
    }

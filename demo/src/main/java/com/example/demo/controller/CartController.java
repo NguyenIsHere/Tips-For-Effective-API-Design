@@ -8,7 +8,7 @@ import com.example.demo.model.CartItem;
 import com.example.demo.service.CartService;
 
 @RestController
-@RequestMapping("api/carts")
+@RequestMapping("api/v1/carts")
 public class CartController {
 
     @Autowired
@@ -23,14 +23,16 @@ public class CartController {
 
     // Thêm sản phẩm vào giỏ hàng
     @PostMapping("/items")
-    public ResponseEntity<Cart> addItemToCart(@RequestHeader("Authorization") String jwt, @RequestBody CartItem cartItem) throws Exception {
+    public ResponseEntity<Cart> addItemToCart(@RequestHeader("Authorization") String jwt,
+            @RequestBody CartItem cartItem) throws Exception {
         Cart updatedCart = cartService.addItemToCart(jwt, cartItem); // Sử dụng JWT để thêm sản phẩm vào cart
         return ResponseEntity.ok(updatedCart);
     }
 
     // Cập nhật số lượng hoặc thông tin sản phẩm trong giỏ hàng
     @PutMapping("/items")
-    public ResponseEntity<Cart> updateCartItem(@RequestHeader("Authorization") String jwt, @RequestBody CartItem cartItem) throws Exception {
+    public ResponseEntity<Cart> updateCartItem(@RequestHeader("Authorization") String jwt,
+            @RequestBody CartItem cartItem) throws Exception {
         Cart updatedCart = cartService.updateCartItem(jwt, cartItem); // Sử dụng JWT để cập nhật sản phẩm trong cart
         return updatedCart != null ? ResponseEntity.ok(updatedCart) : ResponseEntity.notFound().build();
     }
@@ -38,11 +40,11 @@ public class CartController {
     // Xóa sản phẩm khỏi giỏ hàng
     @DeleteMapping("/items/{productId}/{colorName}/{sizeName}")
     public ResponseEntity<Cart> removeItemFromCart(
-            @RequestHeader("Authorization") String jwt, 
-            @PathVariable String productId, 
+            @RequestHeader("Authorization") String jwt,
+            @PathVariable String productId,
             @PathVariable String colorName,
             @PathVariable String sizeName) throws Exception {
-        
+
         Cart updatedCart = cartService.removeItemFromCart(jwt, productId, colorName, sizeName);
         return updatedCart != null ? ResponseEntity.ok(updatedCart) : ResponseEntity.notFound().build();
     }

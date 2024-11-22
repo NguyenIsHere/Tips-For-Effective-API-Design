@@ -16,10 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
-@RequestMapping({"/api/products"})
-@CrossOrigin(
-   origins = {"http://localhost:3000"}
-)
+@RequestMapping({ "/api/v1/products" })
+@CrossOrigin(origins = { "http://localhost:3000" })
 public class ProductUserController {
    @Autowired
    private ProductService productService;
@@ -51,6 +49,6 @@ public class ProductUserController {
 
    @GetMapping
    public Page<Product> getProducts(Pageable pageable) {
-       return productService.getProducts(pageable);
+      return productService.getProducts(pageable);
    }
 }

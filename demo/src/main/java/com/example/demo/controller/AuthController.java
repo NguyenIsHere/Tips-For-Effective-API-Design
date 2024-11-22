@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 public class AuthController {
     @Autowired
     private UserRepository userRepository;
@@ -41,9 +41,9 @@ public class AuthController {
     private CustomerUserDetailsService customerUserDetailsService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthRespone> createUserHandler(@RequestBody User user) throws Exception{
+    public ResponseEntity<AuthRespone> createUserHandler(@RequestBody User user) throws Exception {
         User isEmailExist = userRepository.findByEmail(user.getEmail());
-        if(isEmailExist != null){
+        if (isEmailExist != null) {
             throw new Exception("Email is already used by another user");
         }
 
@@ -55,7 +55,8 @@ public class AuthController {
 
         User savedUser = userRepository.save(createdUser);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(), savedUser.getPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),
+                savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtProvider.generatedToken(authentication);
@@ -69,12 +70,12 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthRespone> signin(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<AuthRespone> signin(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticate(loginRequest.getUsername(), loginRequest.getPassword());
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String role = authorities.isEmpty()?null:authorities.iterator().next().getAuthority();
+        String role = authorities.isEmpty() ? null : authorities.iterator().next().getAuthority();
 
-        String jwt =  jwtProvider.generatedToken(authentication);
+        String jwt = jwtProvider.generatedToken(authentication);
 
         AuthRespone authRespone = new AuthRespone();
         authRespone.setJwt(jwt);
@@ -87,16 +88,16 @@ public class AuthController {
     private Authentication authenticate(String username, String password) {
         UserDetails userDetails = customerUserDetailsService.loadUserByUsername(username);
 
-        if(userDetails == null){
+        if (userDetails == null) {
             throw new BadCredentialsException("Invalid username....");
         }
 
-        if(!passwordEncoder.matches(password,userDetails.getPassword())){
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails,
                 null, userDetails.getAuthorities());
     }
-  
+
 }

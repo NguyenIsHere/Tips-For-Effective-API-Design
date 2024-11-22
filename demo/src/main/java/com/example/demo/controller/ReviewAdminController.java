@@ -9,9 +9,8 @@ import com.example.demo.service.ReviewService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 @RestController
-@RequestMapping("api/admin/reviews")
+@RequestMapping("api/v1/admin/reviews")
 public class ReviewAdminController {
 
     @Autowired
@@ -25,7 +24,8 @@ public class ReviewAdminController {
 
     // Xóa đánh giá
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable String reviewId, @RequestHeader("Authorization") String jwt) throws Exception {
+    public ResponseEntity<Void> deleteReview(@PathVariable String reviewId, @RequestHeader("Authorization") String jwt)
+            throws Exception {
         reviewService.deleteReviewByAdmin(reviewId);
         return ResponseEntity.noContent().build();
     }

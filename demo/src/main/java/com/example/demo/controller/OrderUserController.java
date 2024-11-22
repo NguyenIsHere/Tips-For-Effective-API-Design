@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/orders")
 public class OrderUserController {
 
   @Autowired
@@ -26,18 +26,19 @@ public class OrderUserController {
   @Autowired
   private OrderRequestService orderRequestService;
 
-    // Method lây đơn hàng phân trang
-    @GetMapping("/my-orders")
-    public Page<OrderRequest> getOrderPage(@RequestHeader("Authorization") String jwt, Pageable pageable) throws Exception {
-      User user = userService.findUserByJwtToken(jwt);
-      return orderRequestRepository.findByUserId(user.getId(), pageable);
-    }
+  // Method lây đơn hàng phân trang
+  @GetMapping("/my-orders")
+  public Page<OrderRequest> getOrderPage(@RequestHeader("Authorization") String jwt, Pageable pageable)
+      throws Exception {
+    User user = userService.findUserByJwtToken(jwt);
+    return orderRequestRepository.findByUserId(user.getId(), pageable);
+  }
 
-    // Method để hủy đơn hàng
-    @DeleteMapping("/cancel/{orderRequestId}")
-    public ResponseEntity<String> deleteOrder(@RequestHeader("Authorization") String jwt,
-        @PathVariable String orderRequestId) throws Exception {
-      String response = orderRequestService.deleteOrder(orderRequestId);
-      return ResponseEntity.ok(response);
-    }
+  // Method để hủy đơn hàng
+  @DeleteMapping("/cancel/{orderRequestId}")
+  public ResponseEntity<String> deleteOrder(@RequestHeader("Authorization") String jwt,
+      @PathVariable String orderRequestId) throws Exception {
+    String response = orderRequestService.deleteOrder(orderRequestId);
+    return ResponseEntity.ok(response);
+  }
 }

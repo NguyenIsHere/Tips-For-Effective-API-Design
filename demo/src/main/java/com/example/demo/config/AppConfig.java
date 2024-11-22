@@ -23,13 +23,14 @@ public class AppConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(Authorize -> Authorize
-                        .requestMatchers("api/payment/zalopay/callback").permitAll() // Allow ZaloPay callback without authentication
-                        .requestMatchers("/api/admin/**").hasAnyRole("SHOP_OWNER", "ADMIN")
-                        .requestMatchers("/api/**").authenticated()                       
-                        .anyRequest().permitAll()
-                ).addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
-                .csrf(csrt->csrt.disable())
-                .cors(cors->cors.configurationSource(corsConfigurationSource()));
+                        .requestMatchers("api/v1/payment/zalopay/callback").permitAll() // Allow ZaloPay callback
+                                                                                        // without authentication
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole("SHOP_OWNER", "ADMIN")
+                        .requestMatchers("/api/v1/**").authenticated()
+                        .anyRequest().permitAll())
+                .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
+                .csrf(csrt -> csrt.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
@@ -37,11 +38,10 @@ public class AppConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         return new CorsConfigurationSource() {
             @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request){
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration cfg = new CorsConfiguration();
                 cfg.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:3000/"
-                ));
+                        "http://localhost:3000/"));
                 cfg.setAllowedMethods(Collections.singletonList("*"));
                 cfg.setAllowCredentials(true);
                 cfg.setAllowedHeaders(Collections.singletonList("*"));
@@ -53,7 +53,7 @@ public class AppConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

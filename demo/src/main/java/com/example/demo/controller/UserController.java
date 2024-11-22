@@ -19,7 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("api/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -28,15 +28,16 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/profile")
-    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt) throws Exception{
+    public ResponseEntity<User> findUserByJwtToken(@RequestHeader("Authorization") String jwt) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/updateUser")
-    public ResponseEntity<User> updateUser(@RequestBody User requser, @RequestHeader("Authorization") String jwt) throws Exception{
+    public ResponseEntity<User> updateUser(@RequestBody User requser, @RequestHeader("Authorization") String jwt)
+            throws Exception {
         User user = userService.findUserByJwtToken(jwt);
-    
+
         user.setFullname(requser.getFullname());
         user.setPhone(requser.getPhone());
         user.setAddress(requser.getAddress());
@@ -55,10 +56,10 @@ public class UserController {
         User updatedUser = userRepository.save(user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
-    
+
     @GetMapping("/all")
     public Page<User> getAllUsers(@RequestHeader("Authorization") String jwt, Pageable pageable) throws Exception {
         return userService.getAllUsers(pageable);
     }
-    
+
 }
