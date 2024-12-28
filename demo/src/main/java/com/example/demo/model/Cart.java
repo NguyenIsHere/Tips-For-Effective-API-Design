@@ -13,13 +13,13 @@ import java.util.ArrayList;
 public class Cart {
 
     @Id
-    private String id;  // ID của giỏ hàng
+    private String id; // ID của giỏ hàng
 
     @Field("user_id")
-    private String userId;  // ID của người dùng sở hữu giỏ hàng (sử dụng từ lớp User)
+    private String userId; // ID của người dùng sở hữu giỏ hàng (sử dụng từ lớp User)
 
     private List<CartItem> items; // Danh sách các sản phẩm trong giỏ hàng
-    
+
     private double totalPrice; // Tổng giá của tất cả sản phẩm trong giỏ hàng
 
     // Constructor không tham số
@@ -54,6 +54,7 @@ public class Cart {
                 break;
             }
         }
+        calculateTotalPrice(); // Tính lại tổng giá sau khi cập nhật
     }
 
     // Phương thức tính tổng giá của tất cả sản phẩm trong giỏ hàng
@@ -65,4 +66,3 @@ public class Cart {
         this.totalPrice = total;
     }
 }
-
