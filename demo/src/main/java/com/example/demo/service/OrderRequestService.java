@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 @Service
 public class OrderRequestService {
 
@@ -48,30 +47,30 @@ public class OrderRequestService {
 
   // Sửa đơn hàng
   public String editOrder(String orderRequestId, OrderRequest orderRequest) {
-      Optional<OrderRequest> optionalOrderRequest = orderRequestRepository.findById(orderRequestId);
-      if (optionalOrderRequest.isPresent()) {
-          OrderRequest existingOrderRequest = optionalOrderRequest.get();
-          existingOrderRequest.setUserId(orderRequest.getUserId());
-          existingOrderRequest.setAmount(orderRequest.getAmount());
-          existingOrderRequest.setStatus(orderRequest.getStatus());
-          existingOrderRequest.setItem(orderRequest.getItem());
-          existingOrderRequest.setBankCode(orderRequest.getBankCode());
-          existingOrderRequest.setDescription(orderRequest.getDescription());
-          existingOrderRequest.setEmbedData(orderRequest.getEmbedData());
-          existingOrderRequest.setCallbackUrl(orderRequest.getCallbackUrl());
-          orderRequestRepository.save(existingOrderRequest);
-          return "Order updated successfully";
-      } else {
-          return "Order not found";
-      }
+    Optional<OrderRequest> optionalOrderRequest = orderRequestRepository.findById(orderRequestId);
+    if (optionalOrderRequest.isPresent()) {
+      OrderRequest existingOrderRequest = optionalOrderRequest.get();
+      existingOrderRequest.setUserId(orderRequest.getUserId());
+      existingOrderRequest.setAmount(orderRequest.getAmount());
+      existingOrderRequest.setStatus(orderRequest.getStatus());
+      existingOrderRequest.setItem(orderRequest.getItem());
+      existingOrderRequest.setBankCode(orderRequest.getBankCode());
+      existingOrderRequest.setDescription(orderRequest.getDescription());
+      existingOrderRequest.setEmbedData(orderRequest.getEmbedData());
+      existingOrderRequest.setCallbackUrl(orderRequest.getCallbackUrl());
+      orderRequestRepository.save(existingOrderRequest);
+      return "Order updated successfully";
+    } else {
+      return "Order not found";
+    }
   }
 
   // Xóa đơn hàng
   public String deleteOrder(String orderRequestId) {
     orderRequestRepository.deleteById(orderRequestId);
-    return "Order status deleted successfully";
+    return "Order deleted successfully";
   }
-  
+
   // Lấy danh sách đơn hàng của người dùng theo trang
   public Page<OrderRequest> getOrdersByUserId(String userId, Pageable pageable) {
     return orderRequestRepository.findByUserId(userId, pageable);
