@@ -27,6 +27,7 @@ public class AppConfig {
                                                                                         // without authentication
                         .requestMatchers("/api/v1/admin/**").hasAnyRole("SHOP_OWNER", "ADMIN")
                         .requestMatchers("/api/v1/**").authenticated()
+                        .requestMatchers("/api/v1/auth/signup").permitAll()
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
                 .csrf(csrt -> csrt.disable())

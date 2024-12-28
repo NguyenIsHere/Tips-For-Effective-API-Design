@@ -12,11 +12,12 @@ import java.util.Map;
 
 @Service
 public class ZaloPayCallbackService {
-    
+
     @Autowired
     private OrderRequestRepository orderRequestRepository;
 
-    private static final String key2 = "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"; // Khóa xác thực key2 được cung cấp bởi ZaloPay
+    private static final String key2 = "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"; // Khóa xác thực key2 được cung cấp bởi
+                                                                           // ZaloPay
 
     public Map<String, Object> handleCallback(Map<String, Object> postdatajson) {
         Map<String, Object> result = new HashMap<>();
@@ -58,4 +59,3 @@ public class ZaloPayCallbackService {
         return result;
     }
 }
-
