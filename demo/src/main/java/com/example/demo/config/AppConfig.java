@@ -24,7 +24,6 @@ public class AppConfig {
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(Authorize -> Authorize
                         .requestMatchers("api/v1/payment/zalopay/callback").permitAll() // Allow ZaloPay callback
-                                                                                        // without authentication
                         .requestMatchers("/api/v1/admin/**").hasAnyRole("SHOP_OWNER", "ADMIN")
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())

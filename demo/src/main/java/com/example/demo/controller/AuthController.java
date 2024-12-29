@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private UserRepository userRepository;

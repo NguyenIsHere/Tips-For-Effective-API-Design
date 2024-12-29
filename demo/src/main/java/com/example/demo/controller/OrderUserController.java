@@ -34,6 +34,15 @@ public class OrderUserController {
     return orderRequestRepository.findByUserId(user.getId(), pageable);
   }
 
+  // Method lấy 1 đơn hàng
+  @GetMapping("/{orderRequestId}")
+  public ResponseEntity<OrderRequest> getOrderById(@RequestHeader("Authorization") String jwt,
+      @PathVariable String orderRequestId)
+      throws Exception {
+    OrderRequest orderRequest = orderRequestService.getOrderById(orderRequestId);
+    return ResponseEntity.ok(orderRequest);
+  }
+
   // Method để hủy đơn hàng
   @DeleteMapping("/cancel/{orderRequestId}")
   public ResponseEntity<String> deleteOrder(@RequestHeader("Authorization") String jwt,

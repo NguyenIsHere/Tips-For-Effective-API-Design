@@ -13,20 +13,20 @@ import java.time.LocalDateTime;
 public class Review {
 
     @Id
-    private String id;  // MongoDB sử dụng String cho ObjectId
+    private String id; // MongoDB sử dụng String cho ObjectId
 
     @Field("product_id")
-    private String productId;  // ID của sản phẩm (tham chiếu đến bảng Product)
+    private String productId; // ID của sản phẩm (tham chiếu đến bảng Product)
 
     @Field("user_id")
-    private String userId;  // ID của người dùng (sử dụng từ lớp User)
+    private String userId; // ID của người dùng (sử dụng từ lớp User)
 
-    private int rating;  // Đánh giá từ 1-5 sao
-    private String comment;  // Nội dung đánh giá
-    private LocalDateTime reviewDate;  // Thời gian đánh giá
+    private Integer rating; // Đánh giá từ 1-5 sao
+    private String comment; // Nội dung đánh giá
+    private LocalDateTime reviewDate; // Thời gian đánh giá
 
     // Constructor
-    public Review(String productId, String userId, int rating, String comment, LocalDateTime reviewDate) {
+    public Review(String productId, String userId, Integer rating, String comment, LocalDateTime reviewDate) {
         this.productId = productId;
         this.userId = userId;
         this.rating = rating;

@@ -32,7 +32,7 @@ public class ZaloPayCreateOrderService {
 
     @Autowired
     private UserService userService; // Để lấy thông tin người dùng từ JWT
-    
+
     @Autowired
     private CartService cartService; // Để lấy thông tin giỏ hàng từ JWT
 
@@ -42,13 +42,15 @@ public class ZaloPayCreateOrderService {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule()); // Đăng ký JavaTimeModule
     }
-    
-    private static final Map<String, String> config = new HashMap<>() {{
-        put("app_id", "2553");
-        put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
-        put("key2", "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz");
-        put("endpoint", "https://sb-openapi.zalopay.vn/v2/create");
-    }};
+
+    private static final Map<String, String> config = new HashMap<>() {
+        {
+            put("app_id", "2553");
+            put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
+            put("key2", "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz");
+            put("endpoint", "https://sb-openapi.zalopay.vn/v2/create");
+        }
+    };
 
     // Phương thức tạo đơn hàng dựa trên dữ liệu từ OrderRequest
     public String createOrder(String jwt, OrderRequest orderRequest) throws Exception {
@@ -71,17 +73,17 @@ public class ZaloPayCreateOrderService {
 
         // Lưu danh sách sản phẩm vào đơn hàng
         orderRequest.setItem(itemsJson);
-        
+
         // Tính tổng giá trị đơn hàng
         cart.calculateTotalPrice();
-        double totalAmount = (Math.round(cart.getTotalPrice() * 100) / 100.0)*1000;
+        double totalAmount = (Math.round(cart.getTotalPrice() * 100) / 100.0);
 
         // Chuyển đổi sang int (làm tròn) và lưu tổng giá trị vào đơn hàng
         orderRequest.setAmount((int) totalAmount);
 
         // Lấy thời gian hiện tại chuyển thành json string và gán vào embedData
         LocalDateTime now = LocalDateTime.now();
-                // Định dạng LocalDateTime thành chuỗi
+        // Định dạng LocalDateTime thành chuỗi
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedDateTime = now.format(formatter);
 
@@ -110,12 +112,11 @@ public class ZaloPayCreateOrderService {
                 order.get("amount").toString(),
                 order.get("app_time").toString(),
                 order.get("embed_data").toString(),
-                order.get("item").toString()
-        );
+                order.get("item").toString());
         order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
 
         // Lưu appTransId vào đơn hàng
-        orderRequest.setOrderRequestId(order.get("app_trans_id").toString()); 
+        orderRequest.setOrderRequestId(order.get("app_trans_id").toString());
 
         // Lưu thông tin đơn hàng vào cơ sở dữ liệu
         orderRequestRepository.save(orderRequest);
@@ -129,7 +130,8 @@ public class ZaloPayCreateOrderService {
         order.forEach(body::add);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        String response = restTemplate.exchange(config.get("endpoint"), HttpMethod.POST, requestEntity, String.class).getBody();
+        String response = restTemplate.exchange(config.get("endpoint"), HttpMethod.POST, requestEntity, String.class)
+                .getBody();
 
         // Trả về phản hồi từ ZaloPay
         return response != null ? response : "No response from ZaloPay.";

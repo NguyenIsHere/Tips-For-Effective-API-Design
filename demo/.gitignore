@@ -8,6 +8,11 @@
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+checksums.lock
+sha1-checksum.bin
+fileHashes.bin
+fileHashes.lock
+
 ### STS ###
 .apt_generated
 .classpath

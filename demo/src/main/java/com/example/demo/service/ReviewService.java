@@ -18,7 +18,7 @@ public class ReviewService {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private UserService userService;  // Để lấy thông tin người dùng từ JWT
+    private UserService userService; // Để lấy thông tin người dùng từ JWT
 
     // Lấy danh sách đánh giá của sản phẩm theo productId với phân trang
     public Page<Review> getReviewsPageByProductId(String productId, Pageable pageable) {
@@ -27,32 +27,40 @@ public class ReviewService {
 
     // Thêm đánh giá mới
     public Review addReview(String jwt, Review review) throws Exception {
-        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
-        review.setUserId(user.getId());  // Thiết lập userId cho đánh giá
-        review.setReviewDate(LocalDateTime.now());  // Thiết lập thời gian đánh giá
+        User user = userService.findUserByJwtToken(jwt); // Lấy thông tin người dùng từ JWT
+        review.setUserId(user.getId()); // Thiết lập userId cho đánh giá
+        review.setReviewDate(LocalDateTime.now()); // Thiết lập thời gian đánh giá
         return reviewRepository.save(review);
     }
 
-    // Cập nhật đánh giá
     public Review updateReview(String jwt, String reviewId, Review updatedReview) throws Exception {
-        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        User user = userService.findUserByJwtToken(jwt);
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
 
         if (optionalReview.isPresent() && optionalReview.get().getUserId().equals(user.getId())) {
             Review existingReview = optionalReview.get();
-            existingReview.setRating(updatedReview.getRating());
-            existingReview.setComment(updatedReview.getComment());
+
+            // Chỉ cập nhật rating nếu updatedReview.rating != null
+            if (updatedReview.getRating() != null) {
+                existingReview.setRating(updatedReview.getRating());
+            }
+
+            // Chỉ cập nhật comment nếu updatedReview.comment != null
+            if (updatedReview.getComment() != null) {
+                existingReview.setComment(updatedReview.getComment());
+            }
+
             return reviewRepository.save(existingReview);
         }
-        return null; // Trả về null nếu không tìm thấy đánh giá hoặc không phải của người dùng
+        return null;
     }
 
     // Xóa đánh giá
     public void deleteReview(String jwt, String reviewId) throws Exception {
-        User user = userService.findUserByJwtToken(jwt);  // Lấy thông tin người dùng từ JWT
+        User user = userService.findUserByJwtToken(jwt); // Lấy thông tin người dùng từ JWT
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
         if (optionalReview.isPresent() && optionalReview.get().getUserId().equals(user.getId())) {
-            reviewRepository.deleteById(reviewId);  // Xóa đánh giá của người dùng
+            reviewRepository.deleteById(reviewId); // Xóa đánh giá của người dùng
         }
     }
 

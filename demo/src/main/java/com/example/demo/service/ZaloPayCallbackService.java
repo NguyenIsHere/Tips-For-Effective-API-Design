@@ -12,11 +12,15 @@ import java.util.Map;
 
 @Service
 public class ZaloPayCallbackService {
-    
+
     @Autowired
     private OrderRequestRepository orderRequestRepository;
 
-    private static final String key2 = "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"; // Khóa xác thực key2 được cung cấp bởi ZaloPay
+    @Autowired
+    private CartService cartService; // inject CartService
+
+    private static final String key2 = "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz"; // Khóa xác thực key2 được cung cấp bởi
+                                                                           // ZaloPay
 
     public Map<String, Object> handleCallback(Map<String, Object> postdatajson) {
         Map<String, Object> result = new HashMap<>();
@@ -41,8 +45,26 @@ public class ZaloPayCallbackService {
                 String appTransId = (String) datajson.get("app_trans_id");
                 // Tìm request order theo Id và cập nhật trạng thái lên mongoDB
                 orderRequestRepository.findById(appTransId).ifPresent(orderRequest -> {
+                    // 1. Cập nhật trạng thái đơn hàng
                     orderRequest.setStatus("COMPLETED");
                     orderRequestRepository.save(orderRequest);
+
+                    // 2. Lấy userId từ orderRequest
+                    String userId = orderRequest.getUserId();
+
+                    // 3. Giảm stock tương ứng với các sản phẩm trong giỏ
+                    try {
+                        cartService.reduceStock(userId);
+                    } catch (Exception e) {
+                        // Nếu có lỗi xảy ra, bạn có thể log ra file hoặc console
+                        // Và rollback trạng thái đơn hàng
+                        orderRequest.setStatus("FAILED");
+                        orderRequestRepository.save(orderRequest);
+                        throw new RuntimeException("Failed to reduce stock");
+                    }
+
+                    // 4. Xóa giỏ
+                    cartService.clearCartByUserId(userId);
                 });
 
                 // Trả về thông báo thanh toán thành công
@@ -58,4 +80,3 @@ public class ZaloPayCallbackService {
         return result;
     }
 }
-

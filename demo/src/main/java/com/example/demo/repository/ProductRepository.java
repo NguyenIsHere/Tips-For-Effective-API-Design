@@ -11,9 +11,13 @@ import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
+
   @Query("{ 'colors.sizes.price' : { $gte: ?0, $lte: ?1 } }")
   List<Product> findProductsBySizePriceBetween(double minPrice, double maxPrice);
 
   Product findByName(String name);
+
+  // findAll(Pageable) mặc định đã có trong MongoRepository,
+  // nhưng nếu bạn muốn override thì hãy trả về `Page<Product>`
   Page<Product> findAll(Pageable pageable);
 }
