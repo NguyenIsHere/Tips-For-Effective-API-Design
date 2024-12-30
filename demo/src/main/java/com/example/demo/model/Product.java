@@ -21,10 +21,4 @@ public class Product {
    public Product() {
    }
 
-   public Product(String name, String description, String category, List<Color> colors) {
-      this.name = name;
-      this.description = description;
-      this.category = category;
-      this.colors = colors;
-   }
 }

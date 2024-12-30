@@ -26,11 +26,4 @@ public class Review {
     private LocalDateTime reviewDate; // Thời gian đánh giá
 
     // Constructor
-    public Review(String productId, String userId, Integer rating, String comment, LocalDateTime reviewDate) {
-        this.productId = productId;
-        this.userId = userId;
-        this.rating = rating;
-        this.comment = comment;
-        this.reviewDate = reviewDate;
-    }
 }
