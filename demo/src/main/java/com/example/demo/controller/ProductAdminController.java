@@ -30,9 +30,7 @@ public class ProductAdminController {
                         products);
 
             // Set Cache-Control headers
-            return ResponseEntity.ok()
-                        .header("Cache-Control", "public, max-age=600") // Cache for 10 minutes
-                        .body(result);
+            return ResponseEntity.ok().body(result);
       }
 
       // Lấy 1 sản phẩm theo ID
@@ -48,9 +46,7 @@ public class ProductAdminController {
                               product);
 
                   // Set Cache-Control headers
-                  return ResponseEntity.ok()
-                              .header("Cache-Control", "public, max-age=600") // Cache for 10 minutes
-                              .body(result);
+                  return ResponseEntity.ok().body(result);
             } else {
                   ApiResult<ProductDTO> result = new ApiResult<>(
                               false,
